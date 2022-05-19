@@ -1,15 +1,22 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Button from "../../../basic/Button";
 import SubjectMiniature from "../../SubjectMiniature";
-import {useAppSelector} from "../../../../redux/hooks";
+import {useAppDispatch, useAppSelector} from "../../../../redux/hooks";
 import SubjectLectureCardEdited from "../../SubjectLectureCard-edited";
-import {SelectiveSubject} from "../../../../types";
+import {Subject} from "../../../../types";
+import {fetchAppStage, updateAppStage} from "../../../../redux/slices/appSlice";
 
 function SecondStageForm() {
 
+    const dispatch = useAppDispatch();
     const {pendingSubjects} = useAppSelector(state => state.admin)
+    const {isDataLoading} = useAppSelector(state => state.app)
     const [isModalOpened, setIsModalOpened] = useState<boolean>(false);
-    const [viewedSubject, setViewedSubject] = useState<SelectiveSubject | null>(pendingSubjects[0] || null)
+    const [viewedSubject, setViewedSubject] = useState<Subject | null>(pendingSubjects[0] || null)
+
+    useEffect(() => {
+        dispatch(fetchAppStage())
+    }, [])
 
     return (
         <>
@@ -34,7 +41,7 @@ function SecondStageForm() {
                     ) : <p className='text-sm font-medium'>Студенти поки не проголосували за жоден з предметів</p>}
                 </div>
                 <div className='absolute bottom-[29px] right-[29px] w-24 h-[37.5px]'>
-                    <Button label='Далі'/>
+                    <Button label='Далі' isLoading={isDataLoading} onClick={() => dispatch(updateAppStage(3))}/>
                 </div>
             </div>
         </>

@@ -1,32 +1,32 @@
 export type AppStage = 1 | 2 | 3 | 4;
 export type UserRole = 'student' | 'lecturer' | 'admin';
 
-export type SelectedSubjectInfo = {
+export type SubjectStudyingInfo = {
     lecturer: string;
     messenger: string;
     link: string;
 }
 
-export type SelectedSubject = {
-    name: string;
-    lectureInfo: SelectedSubjectInfo | null;
-    practiceInfo: SelectedSubjectInfo | null;
+export type SubjectBasicInfo = {
+    semester: number;
+    ects: number;
+    controlType: string;
+    department: string;
 }
 
-export type SelectiveSubject = {
+export type Subject = {
     name: string;
     votes: number;
-    basicInfo: {
-        semester: number;
-        ects: number;
-        controlType: string;
-        department: string;
-    };
+    basicInfo: SubjectBasicInfo;
     introLectureInfo: {
         description: string;
         lecturer: string;
         date: number;
         platform: string;
         link: string;
+    } | null;
+    studyingInfo: {
+        lectureInfo: SubjectStudyingInfo;
+        practiceInfo: SubjectStudyingInfo;
     } | null;
 }

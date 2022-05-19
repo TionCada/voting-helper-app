@@ -10,6 +10,7 @@ import {useAppSelector} from "../redux/hooks";
 interface StudentAccountProps {
     appStage: AppStage;
 }
+
 function StudentAccount({appStage}: StudentAccountProps) {
 
     const { name, selectedSubjects } = useAppSelector(state => state.student)
