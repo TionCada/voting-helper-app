@@ -77,8 +77,10 @@ export const clearDatabase = async (callbackFunc?: () => void) => {
 
         const subjectsSnapshot = await getDocs(collection(db, "subjects"));
         subjectsSnapshot.forEach((document) => {
-            const docRef = doc(db, 'subjects', document.id)
-            batch.delete(docRef);
+            if (document.id !== 'initial_subject') {
+                const docRef = doc(db, 'subjects', document.id)
+                batch.delete(docRef);
+            }
         });
 
         const usersSnapshot = await getDocs(collection(db, "users"));
@@ -89,9 +91,8 @@ export const clearDatabase = async (callbackFunc?: () => void) => {
             }
         });
 
-        // await batch.commit()
+        await batch.commit()
         callbackFunc && callbackFunc()
-        toast.success('Дані видалені успішно')
     } catch (err) {
         toast.error('Помилка при видаленні даних')
         console.log(err)

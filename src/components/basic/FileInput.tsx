@@ -2,8 +2,6 @@ import React from 'react'
 import 'tippy.js/dist/tippy.css';
 import Papa, {ParseResult} from "papaparse";
 import {UserRole} from "../../types";
-import {collection, doc} from "firebase/firestore";
-import db from "../../db";
 import {ProcessedSubjectData, ProcessedUserData} from "../../utils";
 
 interface FileInputProps {
@@ -25,7 +23,7 @@ interface RawSubjectData {
 }
 
 interface RawUserData {
-    login: string;
+    email: string;
     password: string;
     name: string;
     role: UserRole;
@@ -67,14 +65,12 @@ function FileInput({validationProps, dataType, subjectsHandler, usersHandler, st
     }
 
     const userParserFunc = (response: ParseResult<RawUserData>): any => {
-        const subjectsCollectionRef = collection(db, 'subjects')
         const parsedUsers = response.data.map(
             (item) => ({
                 ...item,
                 subjects: item.subjects
                     .slice(0, -1)
                     .split(';')
-                    .map((item) => doc(subjectsCollectionRef, item))
             })
         )
         console.log('users', parsedUsers)
@@ -83,13 +79,10 @@ function FileInput({validationProps, dataType, subjectsHandler, usersHandler, st
 
     return (
         <input type='file' accept='.csv' {...validationProps}
-               className={`file:border-r-[1px] file:border-r-[#DFDFDF] file:border-solid
-               file:border-l-0 file:border-t-0 file:border-b-0 font-normal file:font-medium
-               file:bg-[#F0A433] file:px-4 file:py-2 w-60 file:mr-3 file:text-white text-[#6C757D]
-               file:text-sm text-sm file:cursor-pointer border border-[#DFDFDF] ${styles}`}
-               onChange={(e) => {
-                   parseFile(e.target.files && e.target.files[0], dataType)
-               }}
+               className={`file:border-r-[1px] file:border-r-[#DFDFDF] file:border-solid file:border-l-0 file:border-t-0
+               file:border-b-0 file:font-medium font-normal file:bg-[#F0A433] file:py-2 w-60 file:mr-3 file:text-white 
+               text-[#6C757D] file:px-4 file:text-sm text-sm file:cursor-pointer border border-[#DFDFDF] ${styles}`}
+               onChange={(e) => { parseFile(e.target.files && e.target.files[0], dataType)} }
         />
     )
 }

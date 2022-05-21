@@ -1,9 +1,9 @@
 import React from 'react';
 import CardTemplate from "./CardTemplate";
-import {SelectiveSubject} from "../../types";
+import {Subject} from "../../types";
 
 type SubjectInfoCardProps = {
-    subject: SelectiveSubject | null;
+    subject: Subject | null;
 }
 
 function SubjectInfoCard({subject}: SubjectInfoCardProps) {

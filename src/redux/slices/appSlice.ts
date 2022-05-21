@@ -1,28 +1,52 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
-import {AppStage, UserRole} from "../../types";
+import {AppStage, Subject, UserRole} from "../../types";
 import {doc, updateDoc, getDoc} from "firebase/firestore";
-import db from "../../db";
 import {toast} from 'react-toastify';
+import db from "../../db";
+
+type UserCredentials = {
+    email: string;
+    password: string
+}
+
+export interface UserData {
+    id: string;
+    name: string;
+    role: UserRole;
+    subjects: Subject[];
+}
 
 type App = {
     stage: AppStage;
-    authorizedUserId: string;
-    userRole: UserRole;
+    authorizedUserData: UserData | null;
     isDataLoading: boolean;
-    error: boolean;
+    isErrorOccurred: boolean;
 }
 
 const initialState: App = {
     stage: 1,
-    authorizedUserId: 'admin',
-    userRole: 'admin',
-    isDataLoading: true,
-    error: false,
+    authorizedUserData: null,
+    isDataLoading: false,
+    isErrorOccurred: false,
 }
+
+export const getAppStage = createAsyncThunk<AppStage, undefined, { rejectValue: string }>(
+    'app/getAppStage',
+    async (_, {rejectWithValue}) => {
+        try {
+            const appRef = doc(db, "app", "info");
+            const response = await getDoc(appRef);
+            const appData: App = response.data() as App
+            return appData.stage
+        } catch (err: any) {
+            return rejectWithValue(err.message)
+        }
+    }
+)
 
 export const updateAppStage = createAsyncThunk<AppStage, AppStage, { rejectValue: string }>(
     'app/updateAppStage',
-    async (appStage: AppStage, {rejectWithValue}) => {
+    async (appStage, {rejectWithValue}) => {
         try {
             const appRef = doc(db, "app", "info");
             await updateDoc(appRef, {stage: appStage});
@@ -30,22 +54,6 @@ export const updateAppStage = createAsyncThunk<AppStage, AppStage, { rejectValue
         } catch (err: any) {
             return rejectWithValue(err.message)
         }
-
-    }
-)
-
-export const fetchAppStage = createAsyncThunk<AppStage, undefined, { rejectValue: string }>(
-    'app/fetchAppStage',
-    async (_, {rejectWithValue}) => {
-        try {
-            const appRef = doc(db, "app", "info");
-            const response = await getDoc(appRef);
-            const appInfo: App = response.data() as App
-            return appInfo ? appInfo.stage : 1
-        } catch (err: any) {
-            return rejectWithValue(err.message)
-        }
-
     }
 )
 
@@ -56,43 +64,42 @@ const appSlice = createSlice({
         enableDataLoading(state) {
             state.isDataLoading = true
         },
+        disableDataLoading(state) {
+            state.isDataLoading = false
+        }
     },
     extraReducers: (builder) => {
         builder
-            .addCase(updateAppStage.pending, (state) => {
-                    state.isDataLoading = true
-                }
-            )
-            .addCase(updateAppStage.fulfilled, (state, action) => {
-                    state.stage = action.payload
-                    toast.success('Перехід на насутпний етап успішний')
-                    state.isDataLoading = false
-                }
-            )
-            .addCase(updateAppStage.rejected, (state, action) => {
-                    console.log(action.payload)
-                    toast.error('Помилка при переході на насутпний етап')
-                    state.isDataLoading = false
-                }
-            )
+            // Get App Stage
+            .addCase(getAppStage.pending, (state) => {
+                state.isDataLoading = true
+            })
+            .addCase(getAppStage.fulfilled, (state, action) => {
+                state.stage = action.payload
+                state.isDataLoading = false
+            })
+            .addCase(getAppStage.rejected, (state, action) => {
+                console.log(action.payload)
+                state.isDataLoading = false
+                state.isErrorOccurred = true
+            })
 
-            .addCase(fetchAppStage.pending, (state) => {
-                    state.isDataLoading = true
-                }
-            )
-            .addCase(fetchAppStage.fulfilled, (state, action) => {
-                    state.stage = action.payload
-                    state.isDataLoading = false
-                }
-            )
-            .addCase(fetchAppStage.rejected, (state, action) => {
-                    console.log(action.payload)
-                    state.error = true
-                    state.isDataLoading = false
-                }
-            )
+            // Update App Stage
+            .addCase(updateAppStage.pending, (state) => {
+                state.isDataLoading = true
+            })
+            .addCase(updateAppStage.fulfilled, (state, action) => {
+                state.stage = action.payload
+                toast.success('Перехід успішний')
+                state.isDataLoading = false
+            })
+            .addCase(updateAppStage.rejected, (state, action) => {
+                console.log(action.payload)
+                toast.error('Помилка при переході')
+                state.isDataLoading = false
+            })
     }
 })
 
 export default appSlice.reducer
-export const {enableDataLoading} = appSlice.actions
+export const {enableDataLoading, disableDataLoading} = appSlice.actions

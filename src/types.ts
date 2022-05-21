@@ -15,6 +15,7 @@ export type SubjectBasicInfo = {
 }
 
 export type Subject = {
+    id: string;
     name: string;
     votes: number;
     basicInfo: SubjectBasicInfo;

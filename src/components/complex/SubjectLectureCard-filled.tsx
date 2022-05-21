@@ -4,11 +4,11 @@ import Button from "../basic/Button";
 import {AiOutlineInfoCircle} from 'react-icons/ai'
 import 'tippy.js/dist/tippy.css';
 import Tippy from '@tippyjs/react';
-import {SelectiveSubject} from "../../types";
+import {Subject} from "../../types";
 import moment from 'moment';
 
 type SubjectLectureCardFilledProps = {
-    viewedSubject: SelectiveSubject | null;
+    viewedSubject: Subject | null;
 }
 
 function SubjectLectureCardFilled({viewedSubject}: SubjectLectureCardFilledProps) {
@@ -29,20 +29,27 @@ function SubjectLectureCardFilled({viewedSubject}: SubjectLectureCardFilledProps
                         </div>
                         <div className='flex flex-col gap-4 pt-3 font-normal text-sm'>
                             <p>{`Викладач: ${viewedSubject?.introLectureInfo?.lecturer}`}</p>
-                            <p> {`Дата: ${moment(viewedSubject?.introLectureInfo?.date).local().format('DD.MM.YYYY HH:mm')}`}</p>
+                            <p>
+                                {`Дата: ${moment(viewedSubject?.introLectureInfo?.date).local().format('DD.MM.YYYY HH:mm')}`}
+                            </p>
                             <p>{`Платформа: ${viewedSubject?.introLectureInfo?.platform}`}</p>
                             <div className='flex flex-row items-center gap-1.5 -mt-1'>
                                 <p>Посилання:</p>
                                 <div className='w-20 h-7'>
                                     <Button label='Перейти' styles='text-sm font-light'
-                                        onClick={() => window.open(`${viewedSubject?.introLectureInfo?.link}`, "_blank")}/>
+                                            onClick={() => window.open(
+                                                `${viewedSubject?.introLectureInfo?.link}`,
+                                                "_blank")}
+                                    />
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div className='w-[434px]'>
                         <p className='font-light text-lg text-[#208843] pt-7'>Короткий зміст</p>
-                        <p className='font-normal text-sm pt-[10px] leading-6'>{viewedSubject?.introLectureInfo?.description}</p>
+                        <p className='font-normal text-sm pt-[10px] leading-6'>
+                            {viewedSubject?.introLectureInfo?.description}
+                        </p>
                     </div>
                 </div>
             </CardTemplate>

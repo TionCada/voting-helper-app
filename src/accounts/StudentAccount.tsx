@@ -1,26 +1,27 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import 'tippy.js/dist/tippy.css';
-import {AppStage} from '../types'
 import ChooseSubjectPage from "../pages/student/ChooseSubjectPage";
 import Header from "../components/complex/Header";
 import AwaitPage from "../pages/student/AwaitPage";
 import ResultsPage from "../pages/student/ResultsPage";
-import {useAppSelector} from "../redux/hooks";
+import {useAppDispatch, useAppSelector} from "../redux/hooks";
+import {getAppStage} from "../redux/slices/appSlice";
 
-interface StudentAccountProps {
-    appStage: AppStage;
-}
+function StudentAccount() {
 
-function StudentAccount({appStage}: StudentAccountProps) {
+    const dispatch = useAppDispatch();
+    const {stage, authorizedUserData} = useAppSelector(state => state.app)
 
-    const { name, selectedSubjects } = useAppSelector(state => state.student)
+    useEffect(() => {
+        dispatch(getAppStage())
+    }, [])
 
     return (
         <>
-            <Header user={name}/>
-            {appStage === 2 && <ChooseSubjectPage/>}
-            {appStage === 3 && <AwaitPage/>}
-            {appStage === 4 && <ResultsPage selectedSubjects={selectedSubjects}/>}
+            <Header user={authorizedUserData?.name}/>
+            {stage === 2 && <ChooseSubjectPage/>}
+            {stage === 3 && <AwaitPage/>}
+            {stage === 4 && <ResultsPage subjects={authorizedUserData?.subjects}/>}
         </>
     )
 }

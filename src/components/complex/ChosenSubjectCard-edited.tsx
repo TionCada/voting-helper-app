@@ -1,43 +1,43 @@
-import React, {useCallback, useEffect} from 'react'
+import React, {useEffect} from 'react'
 import 'tippy.js/dist/tippy.css';
 import CardTemplate from "./CardTemplate";
 import Button from "../basic/Button";
 import Input from "../basic/Input";
 import {useForm} from "react-hook-form";
-import {SelectedSubject} from "../../types";
+import {Subject} from "../../types";
 
 type ChosenSubjectCardEditedProps = {
-    subject: SelectedSubject | null;
+    subject: Subject | null;
 }
 
 function ChosenSubjectCardEdited({subject}: ChosenSubjectCardEditedProps) {
 
     const {register, handleSubmit, reset, formState: {errors}} = useForm({
         defaultValues: {
-            practician: subject?.practiceInfo?.lecturer,
-            practiceMessenger: subject?.practiceInfo?.messenger,
-            practiceChatLink: subject?.practiceInfo?.link,
-            lecturer: subject?.lectureInfo?.lecturer,
-            lectureMessenger: subject?.lectureInfo?.messenger,
-            lectureChatLink: subject?.lectureInfo?.link
+            practician: subject?.studyingInfo?.practiceInfo?.lecturer,
+            practiceMessenger: subject?.studyingInfo?.practiceInfo?.messenger,
+            practiceChatLink: subject?.studyingInfo?.practiceInfo?.link,
+            lecturer: subject?.studyingInfo?.lectureInfo?.lecturer,
+            lectureMessenger: subject?.studyingInfo?.lectureInfo?.messenger,
+            lectureChatLink: subject?.studyingInfo?.lectureInfo?.link
         }
     });
 
     useEffect(() => {
         reset({
-            practician: subject?.practiceInfo?.lecturer,
-            practiceMessenger: subject?.practiceInfo?.messenger,
-            practiceChatLink: subject?.practiceInfo?.link,
-            lecturer: subject?.lectureInfo?.lecturer,
-            lectureMessenger: subject?.lectureInfo?.messenger,
-            lectureChatLink: subject?.lectureInfo?.link
+            practician: subject?.studyingInfo?.practiceInfo?.lecturer,
+            practiceMessenger: subject?.studyingInfo?.practiceInfo?.messenger,
+            practiceChatLink: subject?.studyingInfo?.practiceInfo?.link,
+            lecturer: subject?.studyingInfo?.lectureInfo?.lecturer,
+            lectureMessenger: subject?.studyingInfo?.lectureInfo?.messenger,
+            lectureChatLink: subject?.studyingInfo?.lectureInfo?.link
         })
     }, [subject])
 
     return (
         <div className='w-fit pt-6 px-8'>
             <CardTemplate>
-                <form onSubmit={handleSubmit((data) => {alert(JSON.stringify(data))})} className='px-10 pb-6'>
+                <form onSubmit={handleSubmit((data) => {})} className='px-10 pb-6'>
                     <div className='flex flex-row gap-14 pt-4 pb-6'>
                         <div className='flex flex-col gap-2.5'>
                             <p className='text-lg font-light text-[#208843]'>Інформація про практичні</p>
