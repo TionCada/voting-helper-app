@@ -3,7 +3,7 @@ import 'tippy.js/dist/tippy.css';
 import Header from "../components/complex/Header";
 import AdminPanel from "../components/complex/AdminPanel/AdminPanel";
 import {useAppDispatch, useAppSelector} from "../redux/hooks";
-import {getAppStage} from "../redux/slices/appSlice";
+import {getGeneralData} from "../redux/slices/appSlice";
 
 function AdminAccount() {
 
@@ -11,7 +11,7 @@ function AdminAccount() {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        dispatch(getAppStage())
+        // dispatch(getGeneralData())
     }, [])
 
     return (

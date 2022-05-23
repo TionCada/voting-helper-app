@@ -5,7 +5,7 @@ import Sidebar from "../components/complex/Sidebar";
 import ChosenSubjectCardEdited from "../components/complex/ChosenSubjectCard-edited";
 import {useAppDispatch, useAppSelector} from "../redux/hooks";
 import {Subject} from "../types";
-import {getAppStage} from "../redux/slices/appSlice";
+import {getGeneralData} from "../redux/slices/appSlice";
 
 function LecturerAccount() {
 
@@ -14,7 +14,7 @@ function LecturerAccount() {
     const [viewedSubject, setViewedSubject] = useState<Subject | null>(authorizedUserData?.subjects[0] || null)
 
     useEffect(() => {
-        dispatch(getAppStage())
+        // dispatch(getGeneralData())
     }, [])
 
     return (

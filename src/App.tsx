@@ -11,15 +11,18 @@ function App() {
 
     const {authorizedUserData} = useAppSelector(state => state.app)
     const role = authorizedUserData?.role
-    const id = authorizedUserData?.id
-
+    // const id = authorizedUserData?.id
 
     return (
         <Routes>
-            {!id && <Route path='/' element={<LoginPage/>}/>}
-            {(id && role === 'admin') && <Route path='/admin' element={<AdminAccount/>}/>}
-            {(id && role === 'student') && <Route path='/student' element={<StudentAccount/>}/>}
-            {(id && role === 'lecturer') && <Route path='/lecturer' element={<LecturerAccount/>}/>}
+            <Route path='/' element={<LoginPage/>}/>
+            <Route path='/admin' element={<AdminAccount/>}/>
+            <Route path='/student' element={<StudentAccount/>}/>
+            <Route path='/lecturer' element={<LecturerAccount/>}/>
+            {/*{!id && <Route path='/' element={<LoginPage/>}/>}*/}
+            {/*{(id && role === 'admin') && <Route path='/admin' element={<AdminAccount/>}/>}*/}
+            {/*{(id && role === 'student') && <Route path='/student' element={<StudentAccount/>}/>}*/}
+            {/*{(id && role === 'lecturer') && <Route path='/lecturer' element={<LecturerAccount/>}/>}*/}
         </Routes>
     )
 }

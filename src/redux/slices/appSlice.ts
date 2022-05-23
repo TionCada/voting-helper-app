@@ -3,22 +3,27 @@ import {AppStage, Subject, UserRole} from "../../types";
 import {doc, updateDoc, getDoc} from "firebase/firestore";
 import {toast} from 'react-toastify';
 import db from "../../db";
+import {
+    query,
+    collection,
+    where,
+    documentId,
+    getDocs
+} from "firebase/firestore";
 
-type UserCredentials = {
-    email: string;
-    password: string
-}
-
-export interface UserData {
-    id: string;
+export type UserData = {
+    login: string;
     name: string;
     role: UserRole;
     subjects: Subject[];
 }
 
-type App = {
+interface GeneralData {
     stage: AppStage;
     authorizedUserData: UserData | null;
+}
+
+interface App extends GeneralData {
     isDataLoading: boolean;
     isErrorOccurred: boolean;
 }
@@ -30,27 +35,53 @@ const initialState: App = {
     isErrorOccurred: false,
 }
 
-export const getAppStage = createAsyncThunk<AppStage, undefined, { rejectValue: string }>(
-    'app/getAppStage',
-    async (_, {rejectWithValue}) => {
-        try {
-            const appRef = doc(db, "app", "info");
-            const response = await getDoc(appRef);
-            const appData: App = response.data() as App
-            return appData.stage
-        } catch (err: any) {
-            return rejectWithValue(err.message)
-        }
-    }
-)
-
 export const updateAppStage = createAsyncThunk<AppStage, AppStage, { rejectValue: string }>(
     'app/updateAppStage',
     async (appStage, {rejectWithValue}) => {
         try {
             const appRef = doc(db, "app", "info");
             await updateDoc(appRef, {stage: appStage});
-            return appStage as AppStage
+            return appStage
+        } catch (err: any) {
+            return rejectWithValue(err.message)
+        }
+    }
+)
+
+export const getGeneralData = createAsyncThunk<GeneralData, string, { rejectValue: string }>(
+    'app/getGeneralData',
+    async (userId, {rejectWithValue}) => {
+        try {
+            const appRef = doc(db, "app", "info");
+            const userRef = doc(db, "users", userId);
+
+            const appResponse = await getDoc(appRef);
+            const userResponse = await getDoc(userRef);
+
+            const appData = appResponse.data() as GeneralData
+            const userData = userResponse.data() as UserData
+
+            const subjects: Subject[] = [];
+
+            if (userData.subjects.length > 0) {
+                const q = query(collection(db, "subjects"), where(documentId(), "in", subjects));
+
+                const subjectsDocsSnap = await getDocs(q);
+
+                subjectsDocsSnap.forEach((doc) => {
+                    subjects.push(doc.data() as Subject)
+                });
+            }
+
+            return {
+                stage: appData.stage,
+                authorizedUserData: {
+                    login: userData.login,
+                    name: userData.name,
+                    role: userData.role,
+                    subjects: subjects
+                }
+            }
         } catch (err: any) {
             return rejectWithValue(err.message)
         }
@@ -70,20 +101,6 @@ const appSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            // Get App Stage
-            .addCase(getAppStage.pending, (state) => {
-                state.isDataLoading = true
-            })
-            .addCase(getAppStage.fulfilled, (state, action) => {
-                state.stage = action.payload
-                state.isDataLoading = false
-            })
-            .addCase(getAppStage.rejected, (state, action) => {
-                console.log(action.payload)
-                state.isDataLoading = false
-                state.isErrorOccurred = true
-            })
-
             // Update App Stage
             .addCase(updateAppStage.pending, (state) => {
                 state.isDataLoading = true
@@ -97,6 +114,21 @@ const appSlice = createSlice({
                 console.log(action.payload)
                 toast.error('Помилка при переході')
                 state.isDataLoading = false
+            })
+
+            // Get General Data
+            .addCase(getGeneralData.pending, (state) => {
+                state.isDataLoading = true
+            })
+            .addCase(getGeneralData.fulfilled, (state, action) => {
+                state.stage = action.payload.stage
+                state.authorizedUserData = action.payload.authorizedUserData
+                state.isDataLoading = false
+            })
+            .addCase(getGeneralData.rejected, (state, action) => {
+                console.log(action.payload)
+                state.isDataLoading = false
+                state.isErrorOccurred = true
             })
     }
 })

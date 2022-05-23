@@ -5,7 +5,7 @@ import Header from "../components/complex/Header";
 import AwaitPage from "../pages/student/AwaitPage";
 import ResultsPage from "../pages/student/ResultsPage";
 import {useAppDispatch, useAppSelector} from "../redux/hooks";
-import {getAppStage} from "../redux/slices/appSlice";
+import {getGeneralData} from "../redux/slices/appSlice";
 
 function StudentAccount() {
 
@@ -13,7 +13,7 @@ function StudentAccount() {
     const {stage, authorizedUserData} = useAppSelector(state => state.app)
 
     useEffect(() => {
-        dispatch(getAppStage())
+        // dispatch(getGeneralData())
     }, [])
 
     return (
