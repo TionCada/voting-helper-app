@@ -61,15 +61,15 @@ export const getGeneralData = createAsyncThunk<GeneralData, string, { rejectValu
             const appData = appResponse.data() as GeneralData
             const userData = userResponse.data() as UserData
 
-            const subjects: Subject[] = [];
-
             if (userData.subjects.length > 0) {
-                const q = query(collection(db, "subjects"), where(documentId(), "in", subjects));
+                const q = query(collection(db, "subjects"), where(documentId(), "in", userData.subjects));
 
                 const subjectsDocsSnap = await getDocs(q);
+                let index = 0;
 
                 subjectsDocsSnap.forEach((doc) => {
-                    subjects.push(doc.data() as Subject)
+                    userData.subjects[index] = doc.data() as Subject
+                    index++
                 });
             }
 
@@ -79,10 +79,11 @@ export const getGeneralData = createAsyncThunk<GeneralData, string, { rejectValu
                     login: userData.login,
                     name: userData.name,
                     role: userData.role,
-                    subjects: subjects
+                    subjects: userData.subjects
                 }
             }
         } catch (err: any) {
+            console.log(err)
             return rejectWithValue(err.message)
         }
     }
@@ -97,6 +98,9 @@ const appSlice = createSlice({
         },
         disableDataLoading(state) {
             state.isDataLoading = false
+        },
+        clearAuthorizedUserData(state) {
+            state.authorizedUserData = null
         }
     },
     extraReducers: (builder) => {
@@ -134,4 +138,4 @@ const appSlice = createSlice({
 })
 
 export default appSlice.reducer
-export const {enableDataLoading, disableDataLoading} = appSlice.actions
+export const {enableDataLoading, disableDataLoading, clearAuthorizedUserData} = appSlice.actions

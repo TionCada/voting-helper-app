@@ -1,18 +1,12 @@
-import React, {useEffect} from 'react'
+import React from 'react'
 import 'tippy.js/dist/tippy.css';
 import Header from "../components/complex/Header";
 import AdminPanel from "../components/complex/AdminPanel/AdminPanel";
-import {useAppDispatch, useAppSelector} from "../redux/hooks";
-import {getGeneralData} from "../redux/slices/appSlice";
+import {useAppSelector} from "../redux/hooks";
 
 function AdminAccount() {
 
     const {stage, authorizedUserData} = useAppSelector(state => state.app)
-    const dispatch = useAppDispatch();
-
-    useEffect(() => {
-        // dispatch(getGeneralData())
-    }, [])
 
     return (
         <>

@@ -4,6 +4,7 @@ import {ToastContainer} from 'react-toastify';
 import {useAppSelector} from "../../redux/hooks";
 import ErrorScreen from "./ErrorScreen";
 import LoadingScreen from "./LoadingScreen";
+import {auth} from '../../db';
 
 interface HeaderProps {
     user: string | undefined;
@@ -22,7 +23,7 @@ function Header({user}: HeaderProps) {
             <ToastContainer position="bottom-right"/>
             <p className='text-base font-light text-[#208843]'>{user || '—'}</p>
             <div className='h-8 w-20'>
-                <Button label='Вихід' styles='text-sm'/>
+                <Button onClick={() => auth.signOut()} label='Вихід' styles='text-sm'/>
             </div>
         </div>
     )

@@ -1,21 +1,15 @@
-import React, {useEffect, useState} from 'react'
+import React, {useState} from 'react'
 import 'tippy.js/dist/tippy.css';
 import Header from "../components/complex/Header";
 import Sidebar from "../components/complex/Sidebar";
 import ChosenSubjectCardEdited from "../components/complex/ChosenSubjectCard-edited";
-import {useAppDispatch, useAppSelector} from "../redux/hooks";
+import {useAppSelector} from "../redux/hooks";
 import {Subject} from "../types";
-import {getGeneralData} from "../redux/slices/appSlice";
 
 function LecturerAccount() {
 
-    const dispatch = useAppDispatch();
     const {authorizedUserData} = useAppSelector(state => state.app)
     const [viewedSubject, setViewedSubject] = useState<Subject | null>(authorizedUserData?.subjects[0] || null)
-
-    useEffect(() => {
-        // dispatch(getGeneralData())
-    }, [])
 
     return (
         <>
