@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import 'tippy.js/dist/tippy.css';
 import CardTemplate from "./CardTemplate";
 import Button from "../basic/Button";
@@ -12,6 +12,8 @@ import {GrClose} from 'react-icons/gr';
 import {useForm} from "react-hook-form";
 import {Subject} from "../../types";
 import moment from 'moment'
+import {useAppDispatch} from "../../redux/hooks";
+import {updateSubjectIntroLectureInfo, updateSubjectStudyingInfo} from "../../redux/slices/appSlice";
 
 interface SubjectLectureCardEditedProps {
     subject: Subject | null;
@@ -20,7 +22,9 @@ interface SubjectLectureCardEditedProps {
 
 function SubjectLectureCardEdited({subject, onClickHandler}: SubjectLectureCardEditedProps) {
 
-    const {register, handleSubmit, formState: {errors}} = useForm({
+    console.log(subject)
+
+    const {register, handleSubmit, reset, formState: {errors}} = useForm({
         defaultValues: {
             dateTime: subject?.introLectureInfo && moment(subject?.introLectureInfo?.date).format('yy-MM-DD HH:mm'),
             shortDescription: subject?.introLectureInfo?.description,
@@ -29,6 +33,18 @@ function SubjectLectureCardEdited({subject, onClickHandler}: SubjectLectureCardE
             link: subject?.introLectureInfo?.link,
         }
     });
+
+    useEffect(() => {
+        reset({
+            dateTime: subject?.introLectureInfo === null ? '' : moment(subject?.introLectureInfo?.date).format('yy-MM-DD HH:mm'),
+            shortDescription: subject?.introLectureInfo === null ? '' : subject?.introLectureInfo?.description,
+            lecturer: subject?.introLectureInfo === null ? '' : subject?.introLectureInfo?.lecturer,
+            platform: subject?.introLectureInfo === null ? '' : subject?.introLectureInfo?.platform,
+            link: subject?.introLectureInfo === null ? '' : subject?.introLectureInfo?.link,
+        })
+    }, [subject])
+
+    const dispatch = useAppDispatch();
 
     return (
         <div
@@ -39,7 +55,16 @@ function SubjectLectureCardEdited({subject, onClickHandler}: SubjectLectureCardE
                         <GrClose size={15}/>
                     </div>
                     <form onSubmit={handleSubmit((data) => {
-                        alert(JSON.stringify(data))
+                        dispatch(updateSubjectIntroLectureInfo({
+                            subjectId: subject?.id!,
+                            introLectureInfo: {
+                                description: data.shortDescription!,
+                                date: parseInt(moment(data.dateTime).format('x'), 10),
+                                lecturer: data.lecturer!,
+                                platform: data.platform!,
+                                link: data.link!
+                            }
+                        }))
                     })}
                           className='px-10 py-8'>
                         <div className='flex flex-row gap-10 pt-4 pb-6'>

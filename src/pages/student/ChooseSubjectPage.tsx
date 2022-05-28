@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import 'tippy.js/dist/tippy.css';
 import Sidebar from "../../components/complex/Sidebar";
 import SubjectInfoCard from "../../components/complex/SubjectInfoCard";
@@ -11,6 +11,11 @@ function ChooseSubjectPage() {
 
     const {authorizedUserData} = useAppSelector(state => state.app)
     const [viewedSubject, setViewedSubject] = useState<Subject | null>(authorizedUserData?.subjects[0] || null)
+
+    useEffect(() => {
+        (authorizedUserData && viewedSubject)
+        && setViewedSubject(authorizedUserData.subjects[parseFloat(viewedSubject.id) - 1])
+    }, [authorizedUserData])
 
     return (
         <div className='flex flex-row w-screen h-[calc(100vh-5rem)]'>

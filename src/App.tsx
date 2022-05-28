@@ -16,7 +16,7 @@ function App() {
     const dispatch = useAppDispatch();
     const {authorizedUserData} = useAppSelector(state => state.app)
     const role = authorizedUserData?.role
-    const id = authorizedUserData?.login
+    const id = authorizedUserData?.id
 
     useEffect(() => {
         auth.onAuthStateChanged(() => {
