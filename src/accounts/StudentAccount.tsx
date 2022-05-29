@@ -10,8 +10,6 @@ function StudentAccount() {
 
     const {stage, authorizedUserData} = useAppSelector(state => state.app)
 
-    console.log(authorizedUserData)
-
     return (
         <>
             <Header user={authorizedUserData?.name}/>

@@ -12,8 +12,8 @@ import { useNavigate } from 'react-router-dom';
 
 function App() {
 
-    const navigate = useNavigate();
-    const dispatch = useAppDispatch();
+    const navigate = useNavigate()
+    const dispatch = useAppDispatch()
     const {authorizedUserData} = useAppSelector(state => state.app)
     const role = authorizedUserData?.role
     const id = authorizedUserData?.id

@@ -19,7 +19,7 @@ export interface votesDataObject {
 function SubjectLectureCardEmpty({viewedSubject}: SubjectLectureCardEmptyProps) {
 
     const dispatch = useAppDispatch();
-    const {authorizedUserData} = useAppSelector(state => state.app)
+    const {isDataLoading, authorizedUserData} = useAppSelector(state => state.app)
 
     return (
         <div className='w-fit pl-8 pt-6'>
@@ -45,7 +45,7 @@ function SubjectLectureCardEmpty({viewedSubject}: SubjectLectureCardEmptyProps) 
                         <div className='flex flex-row gap-2 items-center mt-3'>
                             <p className='text-base font-normal'>{`${viewedSubject?.votes}/5 голосів`}</p>
                             <div className='w-20 h-7'>
-                                <Button isDisabled={authorizedUserData?.hasUserVoted} label='Голос' styles='text-sm' onClick={() => dispatch(handleSubjectsVotes({
+                                <Button isDisabled={authorizedUserData?.hasUserVoted} isLoading={isDataLoading} label='Голос' styles='text-sm' onClick={() => dispatch(handleSubjectsVotes({
                                     userId: authorizedUserData?.id!,
                                     subjectId: viewedSubject?.id!,
                                     votes: viewedSubject?.votes! + 1

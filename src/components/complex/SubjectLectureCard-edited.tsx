@@ -12,7 +12,7 @@ import {GrClose} from 'react-icons/gr';
 import {useForm} from "react-hook-form";
 import {Subject} from "../../types";
 import moment from 'moment'
-import {useAppDispatch} from "../../redux/hooks";
+import {useAppDispatch, useAppSelector} from "../../redux/hooks";
 import {updateSubjectIntroLectureInfo, updateSubjectStudyingInfo} from "../../redux/slices/appSlice";
 
 interface SubjectLectureCardEditedProps {
@@ -45,6 +45,7 @@ function SubjectLectureCardEdited({subject, onClickHandler}: SubjectLectureCardE
     }, [subject])
 
     const dispatch = useAppDispatch();
+    const {isDataLoading} = useAppSelector(state => state.app)
 
     return (
         <div
@@ -115,7 +116,7 @@ function SubjectLectureCardEdited({subject, onClickHandler}: SubjectLectureCardE
                                 {subject?.name}
                             </p>
                             <div className='w-[280px] flex pl-10 h-10'>
-                                <Button isSubmit={true} label='Зберегти'/>
+                                <Button isLoading={isDataLoading} isSubmit={true} label='Зберегти'/>
                             </div>
                         </div>
                     </form>
