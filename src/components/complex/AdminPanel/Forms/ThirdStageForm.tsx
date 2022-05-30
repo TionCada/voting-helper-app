@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+// @ts-ignore
 import FileInput from "../../../basic/FileInput";
 import Button from "../../../basic/Button";
 import {useForm} from "react-hook-form";
