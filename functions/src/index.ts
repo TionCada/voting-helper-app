@@ -22,41 +22,53 @@ interface RawSubjectData {
 }
 
 interface RawUserData {
-    email: string;
+    login: string;
     password: string;
     name: string;
     role: UserRole;
     subjects: string;
 }
 
-exports.handleLists = functions.storage.object().onFinalize(async (object: ObjectMetadata) => {
+exports.handleCSVfiles = functions.storage.object().onFinalize(async (object: ObjectMetadata) => {
 
     const registerUsers = async (data: RawUserData[]) => {
         data.forEach((user) => {
-            try {
-                admin.auth().createUser({
-                    email: `${user.email}@gmail.com`,
-                    password: user.password
-                });
-            } catch (err) {
-                functions.logger.log("Error:", err);
-            }
+            admin.auth().createUser({
+                email: `${user.login}@gmail.com`,
+                password: user.password
+            });
         })
     };
 
-    const parseUsers = async (data: RawUserData[]) => {
+    const parseUsers = async (data: RawUserData[], actionType: 'set' | 'update') => {
         const parsedUsers = data.map(
             (item) => ({
-                ...item,
+                id: item.login,
+                name: item.name,
+                role: item.role,
                 subjects: item.subjects
                     .slice(0, -1)
                     .split(';')
             })
         )
-        functions.logger.log("Users:", parsedUsers);
+        if (actionType === 'set') {
+            parsedUsers.forEach((item: any) => {
+                admin.firestore()
+                    .collection('users')
+                    .doc(item.id)
+                    .set(item)
+            })
+        } else if (actionType === 'update') {
+            parsedUsers.forEach((item: any) => {
+                admin.firestore()
+                    .collection('users')
+                    .doc(item.id)
+                    .update({subjects: [...item.subjects]})
+            })
+        }
     }
 
-    const parseSubjects = (data: RawSubjectData[]) => {
+    const parseSubjects = async (data: RawSubjectData[]) => {
         const parsedSubjects = data.map(
             (item) => ({
                 id: item.id.slice(0, -1),
@@ -72,29 +84,35 @@ exports.handleLists = functions.storage.object().onFinalize(async (object: Objec
                 introLectureInfo: null
             })
         )
-        functions.logger.log("Subjects:", parsedSubjects);
+        parsedSubjects.forEach((item: any) => {
+            admin.firestore()
+                .collection('subjects')
+                .doc(item.id)
+                .set(item)
+        })
     }
 
     const storage = new Storage();
-    const fileBucket = 'gs://voting-helper-backend.appspot.com';
+    const bucketPath = 'gs://voting-helper-backend.appspot.com';
+    const bucket = storage.bucket(bucketPath);
     const filePath = object.name;
-    const bucket = storage.bucket(fileBucket);
     const file = bucket.file(filePath!);
 
     file.download()
         .then((data: DownloadResponse) => {
-            const temp = data.toString();
-            papa.parse(temp,
+            papa.parse(data.toString(),
                 {
                     header: true, dynamicTyping: true,
-                    complete(response: ParseResult<RawUserData | RawSubjectData>) {
+                    complete: async (response: ParseResult<RawUserData | RawSubjectData>) => {
                         const folderName = filePath?.split('/')[0];
-                        functions.logger.log("ParsedSubjects:", response.data);
-                        if (folderName === 'users') {
-                            parseUsers(response.data as RawUserData[])
-                            registerUsers(response.data as RawUserData[])
-                        } else if (folderName === 'subjects')
-                            parseSubjects(response.data as RawSubjectData[])
+                        if (folderName === 'lecturers' || folderName === 'students') {
+                            await parseUsers(response.data as RawUserData[], 'set')
+                            await registerUsers(response.data as RawUserData[])
+                        } else if (folderName === 'students_updated') {
+                            await parseUsers(response.data as RawUserData[], 'update')
+                        } else {
+                            await parseSubjects(response.data as RawSubjectData[])
+                        }
                     }
                 }
             );

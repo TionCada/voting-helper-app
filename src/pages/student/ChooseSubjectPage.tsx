@@ -9,6 +9,8 @@ import {useAppSelector} from "../../redux/hooks";
 
 function ChooseSubjectPage() {
 
+    console.log('here')
+
     const {authorizedUserData} = useAppSelector(state => state.app)
     const [viewedSubject, setViewedSubject] = useState<Subject | null>(authorizedUserData?.subjects[0] || null)
 
